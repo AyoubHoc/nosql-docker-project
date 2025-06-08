@@ -82,6 +82,19 @@ nosql-docker-project/
 ├── .env
 └── README.md
 
+Commandes utilisées pour push dans docker hub :
+
+1. Connexion à Docker Hub
+docker logout                    
+docker login                
+
+2. Taguer les images locales pour Docker Hub
+docker tag nosql-docker-project-backend bu0ya/nosql-back:latest
+docker tag nosql-docker-project-frontend bu0ya/nosql-front:latest
+
+3. Pousser les images vers Docker Hub
+docker push bu0ya/nosql-back:latest
+docker push bu0ya/nosql-front:latest
 
 📤 Démo locale
 Pour une démo rapide sur votre propre machine :
