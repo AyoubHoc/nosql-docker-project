@@ -5,6 +5,7 @@ import ArtistRoutes from "./routes/artists";
 import connectDB from "./config/db";
 import GenresRoutes from "./routes/genres"; 
 import PlaylistRoutes from "./routes/playlists";
+import TestRoute from "./routes/test";
 const cors = require('cors');
 import path from 'path';
 
@@ -48,6 +49,7 @@ app.use("/songs", SongsRoutes); // Gestion des chansons
 app.use("/artists", ArtistRoutes); // Gestion des artistes
 app.use("/genre", GenresRoutes); // Gestion des genres
 app.use("/playlists", PlaylistRoutes); // Gestion des playlists
+app.use("/test-db", TestRoute);
 
 // Route par défaut pour vérifier que l'API fonctionne
 app.get("/", (req: Request, res: Response) => {
