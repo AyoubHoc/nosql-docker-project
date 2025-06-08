@@ -1,108 +1,147 @@
-# 🎵 Application NoSQL Full Stack (Dockerized Spotify-like)
+## Contexte du Projet
 
-Ce projet est une application web full stack simulant un mini Spotify. Elle est construite avec :
-- **Frontend** : Vite + Vue.js
-- **Backend** : Express.js + TypeScript
-- **Base de données** : MongoDB
-- **Orchestration** : Docker + Docker Compose
+Cette application est un projet d’exercice visant à mettre en œuvre les compétences de conteneurisation d’une application full stack avec MongoDB, un backend Node.js/Express en TypeScript, et un frontend Vue.js. L'objectif principal est de prouver la maîtrise de Docker et Docker Compose pour créer un environnement de déploiement cohérent, persistant et réseau-sécurisé.
 
 ---
 
-## ✅ Objectifs pédagogiques atteints
+## Structure des Dossiers
 
-- ✅ **Conteneurisation** complète de chaque composant (frontend, backend, MongoDB)
-- ✅ Utilisation de **Docker Compose** pour tout orchestrer
-- ✅ **Persistance** des données MongoDB via un volume
-- ✅ **Communication réseau sécurisée** entre les conteneurs
-- ✅ Déploiement local en une seule commande
-- ✅ Images Docker publiées sur Docker Hub
-
----
-
-## 🏗️ Architecture des conteneurs
-
-```mermaid
-graph TD
-  A[Frontend (Vite)] -->|API REST| B[Backend (Express.js)]
-  B -->|Mongoose| C[MongoDB]
-  subgraph Docker
-    A
-    B
-    C
-  end
-
-🚀 Lancer le projet
-Prérequis :
-Docker & Docker Compose installés
-
-Commandes à exécuter :
-# 1. Cloner le projet
-git clone https://github.com/AyoubHoc/nosql-docker-project.git
-cd nosql-docker-project
-
-# 2. Lancer les conteneurs
-docker-compose up --build
-
-🌐 Accès à l'application
-Frontend : http://localhost:5173
-
-Backend API : http://localhost:3000
-
-Test DB (collections MongoDB) : http://localhost:3000/test-db
-
-🗃️ Docker Compose – explication du fichier
-Le fichier docker-compose.yml orchestre 3 services :
-
-frontend : dépend du backend, exposé sur le port 5173
-
-backend : dépend de mongo, exposé sur le port 3000
-
-mongo : base de données persistante avec volume mongo-data
-
-Utilise un réseau commun (app-network) pour isoler et sécuriser les communications internes.
-
-📦 Images Docker
-Les images Docker personnalisées du front et back sont construites automatiquement à partir des Dockerfile présents dans les dossiers :
-
-frontend/Dockerfile
-
-backend/Dockerfile
-
-🔐 Variables d'environnement
-Le backend lit sa configuration (ex: MONGO_URL) depuis un fichier .env (copié dans l’image).
-
-📁 Structure du projet
+```
 nosql-docker-project/
 ├── backend/
 │   ├── Dockerfile
-│   ├── src/
+│   └── src/
+│       └── routes/
+│           └── test.ts
 ├── frontend/
-│   ├── Dockerfile
+│   └── Dockerfile
 ├── docker-compose.yml
-├── .env
 └── README.md
 
-Commandes utilisées pour push dans docker hub :
+```
 
-1. Connexion à Docker Hub
-docker logout                    
-docker login                
+---
 
-2. Taguer les images locales pour Docker Hub
+## Configuration du fichier `docker-compose.yml`
+
+```yaml
+services:
+  mongo:
+    image: mongo
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - app-network
+
+  backend:
+    build: ./backend
+    container_name: backend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongo
+    environment:
+      - MONGO_URL=mongodb://mongo:27017/nosql-database
+    networks:
+      - app-network
+
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+volumes:
+  mongo-data:
+
+networks:
+  app-network:
+    driver: bridge
+
+```
+
+### Composants Clés
+
+- **Volumes**: `mongo-data` permet de persister les données de MongoDB.
+- **Networks**: `app-network` crée un réseau isolé pour sécuriser les communications.
+- **depends_on**: assure l’ordre de démarrage des services.
+
+---
+
+## Etapes pour démarrer l'application
+
+### 1. Connexion Docker
+
+```bash
+docker login
+
+```
+
+(S'assurer que vous êtes connecté avec le bon compte Docker Hub.)
+
+### 2. Build et lancement des services
+
+```bash
+docker-compose up --build
+
+```
+
+### 🔌 3. Vérifier les conteneurs
+
+```bash
+docker ps
+
+```
+
+Vérifiez que `mongo`, `backend` et `frontend` sont bien lancés.
+
+### 🖊️ 4. Accès à l'application
+
+- **Frontend**: [http://localhost:5173](http://localhost:5173/)
+- **Backend (API)**: [http://localhost:3000](http://localhost:3000/)
+- **MongoDB**: port local 27017 utilisable avec un client type Compass
+
+---
+
+## Publication sur Docker Hub
+
+### Tag des images
+
+```bash
 docker tag nosql-docker-project-backend bu0ya/nosql-back:latest
 docker tag nosql-docker-project-frontend bu0ya/nosql-front:latest
 
-3. Pousser les images vers Docker Hub
+```
+
+### 🚀 Push vers Docker Hub
+
+```bash
 docker push bu0ya/nosql-back:latest
 docker push bu0ya/nosql-front:latest
 
-📤 Démo locale
-Pour une démo rapide sur votre propre machine :
+```
 
-git clone https://github.com/AyoubHoc/nosql-docker-project.git
-cd nosql-docker-project
-docker-compose up --build
+- **Vérification**: Accéder à https://hub.docker.com/repositories/bu0ya
 
+---
 
-👨‍💻 Auteurs
-Ayoub Hocini leo CROFT Ana Fernandes – 
+## Notes Supplémentaires pour le Rapport
+
+- Tous les changements de code ont été commis sur GitHub: https://github.com/AyoubHoc/nosql-docker-project
+- L’image backend contient un routeur `/` qui liste les collections MongoDB disponibles
+- Le projet a été validé sur une VM Ubuntu avec Docker Engine et fonctionne en local
+
+---
+
+## Conclusion
+
+Ce projet prouve la maîtrise de la conteneurisation d’une application web complète, la persistance des données via des volumes, la gestion des dépendances avec Docker Compose, et la publication d’images sur Docker Hub pour faciliter les déploiements futurs.
+
+Réaliser par Ayoub Hocini - Leo CROFT - Ana Fernandes
