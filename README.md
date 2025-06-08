@@ -1,60 +1,95 @@
-# 🎧 NoSQL Docker Project — Spotify Clone
+# 🎵 Application NoSQL Full Stack (Dockerized Spotify-like)
 
-Ce projet est une application full stack de type "Spotify" utilisant :
-- Vue.js pour le frontend
-- Node.js + Express pour le backend
-- MongoDB pour la base de données
-
-Le tout est conteneurisé via Docker 🐳.
+Ce projet est une application web full stack simulant un mini Spotify. Elle est construite avec :
+- **Frontend** : Vite + Vue.js
+- **Backend** : Express.js + TypeScript
+- **Base de données** : MongoDB
+- **Orchestration** : Docker + Docker Compose
 
 ---
 
-## 📁 Structure du projet
-nosql-docker-project/
-├── backend/ # API Node.js
-│ ├── Dockerfile
-│ └── ...
-├── frontend/ # Interface utilisateur Vue.js
-│ ├── Dockerfile
-│ └── ...
-├── docker-compose.yml # Orchestration multi-conteneurs
-└── README.md
+## ✅ Objectifs pédagogiques atteints
 
-## 🚀 Lancer l'application
+- ✅ **Conteneurisation** complète de chaque composant (frontend, backend, MongoDB)
+- ✅ Utilisation de **Docker Compose** pour tout orchestrer
+- ✅ **Persistance** des données MongoDB via un volume
+- ✅ **Communication réseau sécurisée** entre les conteneurs
+- ✅ Déploiement local en une seule commande
+- ✅ Images Docker publiées sur Docker Hub
 
-1. Cloner le projet
+---
 
-git clone https://github.com/AyoubHoc/nosql-docker-project
+## 🏗️ Architecture des conteneurs
+
+```mermaid
+graph TD
+  A[Frontend (Vite)] -->|API REST| B[Backend (Express.js)]
+  B -->|Mongoose| C[MongoDB]
+  subgraph Docker
+    A
+    B
+    C
+  end
+
+🚀 Lancer le projet
+Prérequis :
+Docker & Docker Compose installés
+
+Commandes à exécuter :
+# 1. Cloner le projet
+git clone https://github.com/AyoubHoc/nosql-docker-project.git
 cd nosql-docker-project
 
-2. Lancer les conteneurs
+# 2. Lancer les conteneurs
+docker-compose up --build
 
-docker compose up --build -d
+🌐 Accès à l'application
+Frontend : http://localhost:5173
 
-3. Accéder à l'application
-🎨 Frontend : http://<IP_VM>:5173
+Backend API : http://localhost:3000
 
-🧠 Backend : http://<IP_VM>:3000
+Test DB (collections MongoDB) : http://localhost:3000/test-db
 
-🛢️ MongoDB : sur le port 27017
+🗃️ Docker Compose – explication du fichier
+Le fichier docker-compose.yml orchestre 3 services :
 
-Remplace <IP_VM> par l'adresse IP de ta VM (ex. 192.168.126.141)
+frontend : dépend du backend, exposé sur le port 5173
 
-⚙️ Variables d'environnement
-📦 backend/.env
-PORT=3000
-DB_URL=mongodb://mongo:27017/nosql
-🎨 frontend/.env
-VITE_API_URL=http://backend:3000
+backend : dépend de mongo, exposé sur le port 3000
 
-🐳 Images Docker
-Tu peux retrouver les images Docker sur Docker Hub (si push réussi) :
+mongo : base de données persistante avec volume mongo-data
 
-https://hub.docker.com/r/bu0ya/nosql-frontend
+Utilise un réseau commun (app-network) pour isoler et sécuriser les communications internes.
 
-https://hub.docker.com/r/bu0ya/nosql-backend
+📦 Images Docker
+Les images Docker personnalisées du front et back sont construites automatiquement à partir des Dockerfile présents dans les dossiers :
 
-📚 Auteurs
-Projet adapté depuis Hitoyu22
+frontend/Dockerfile
 
-Repris, modifié et documenté par @AyoubHoc
+backend/Dockerfile
+
+🔐 Variables d'environnement
+Le backend lit sa configuration (ex: MONGO_URL) depuis un fichier .env (copié dans l’image).
+
+📁 Structure du projet
+nosql-docker-project/
+├── backend/
+│   ├── Dockerfile
+│   ├── src/
+├── frontend/
+│   ├── Dockerfile
+├── docker-compose.yml
+├── .env
+└── README.md
+
+
+📤 Démo locale
+Pour une démo rapide sur votre propre machine :
+
+git clone https://github.com/AyoubHoc/nosql-docker-project.git
+cd nosql-docker-project
+docker-compose up --build
+
+
+👨‍💻 Auteurs
+Ayoub Hocini leo CROFT Ana Fernandes – 
